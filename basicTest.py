@@ -19,14 +19,18 @@ def basic_operation():
     with graph.as_default():
         value1 = tf.constant([1,2])
         value2 = tf.constant([3,4])
-        mul = value1 * value2  #不是线代的乘法 #不是内积
+        mul = value1 * value2  #不是线代的乘法 #不是内积 一一对整的乘
 
     with tf.Session(graph=graph) as mySess:
         tf.initialize_all_variables().run()
         print(mySess.run(mul))
 
     #placeholder
-        
+
+
+def use_placeholder():
+    return
+
 
 basic_operation()
 
