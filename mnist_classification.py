@@ -14,6 +14,15 @@ def add_layers(inputs, in_size,out_size,activation_function = None):
         outputs = activation_function(Wx_plus_b)
     return outputs
 
+def compute_accuracy(v_xs,v_ys):
+    global predictions
+    y_pre = sess.run(predictions,feed_dict= {xs: v_xs})
+    correct_prediction = tf.equal(tf.argmax(y_pre,1), tf.argmax(v_ys,1))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction,tf.float32)) # change the data type
+    result = sess.run(accuracy, feed_dict={xs: v_xs, ys: v_ys})
+    return result
+
+
 
 # define placeholder for inputs to network
 
@@ -22,3 +31,17 @@ ys = tf.placeholder(tf.float32, [None,10])
 
 #add output layer
 predictions = add_layers(xs,784,10,activation_function = tf.nn.softmax) #in_size = 784, out_size is result
+
+# loss function # use cross_entropy
+
+cross_entropy = tf.reduce_mean(-tf.reduce_sum(ys*tf.log(predictions),reduction_indices = [1]))
+train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
+
+for i in range(2000):
+    batch_xs, batch_ys = mnist.train.next_batch(100) # use mini batch to learn, save time
+    sess.run(train_step, feed_dict={xs:batch_xs, ys: batch_ys})
+    if i % 50 == 0:
+        print(compute_accuracy(mnist.test.images, mnist.test.labels))
